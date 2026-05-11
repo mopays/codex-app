@@ -80,7 +80,11 @@ function renderDashboard(data) {
   }
 
   const totals = data.totals || {};
-  const rows = data.rows || [];
+  const selectedUser = userFilter.value;
+  const rows = (data.rows || []).filter((row) => {
+    const rowUser = String(row.user || "").toLowerCase();
+    return !rowUser || rowUser === selectedUser;
+  });
 
   dashboard.investment.textContent = money(totals.cumulativeInvestment);
   dashboard.shares.textContent = number(totals.cumulativeShares);
@@ -88,7 +92,7 @@ function renderDashboard(data) {
 
   if (!rows.length) {
     recentRows.innerHTML = `<tr><td colspan="6">ยังไม่มีข้อมูล</td></tr>`;
-    dashboardStatus.textContent = `ยังไม่มีรายการของ ${userFilter.value}`;
+    dashboardStatus.textContent = `ยังไม่มีรายการของ ${selectedUser}`;
     return;
   }
 
@@ -103,7 +107,7 @@ function renderDashboard(data) {
     </tr>
   `).join("");
 
-  dashboardStatus.textContent = `แสดง ${rows.length} รายการล่าสุดของ ${userFilter.value}`;
+  dashboardStatus.textContent = `แสดง ${rows.length} รายการล่าสุดของ ${selectedUser}`;
 }
 
 userFilter.addEventListener("change", loadDashboard);

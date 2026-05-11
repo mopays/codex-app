@@ -90,8 +90,8 @@ function getPreviousTotals_(sheet, user) {
     return { investment: 0, shares: 0 };
   }
 
-  const values = sheet.getRange(DATA_START_ROW, 1, lastRow - DATA_START_ROW + 1, 17).getValues();
-  const matching = values.filter((row) => String(row[16] || '').toLowerCase() === user);
+  const values = sheet.getRange(DATA_START_ROW, 1, lastRow - DATA_START_ROW + 1, sheet.getLastColumn()).getValues();
+  const matching = values.filter((row) => getRowUser_(row) === user);
   const lastData = matching[matching.length - 1] || [];
 
   return {
@@ -120,10 +120,9 @@ function buildListResponse_(sheet, limit, user) {
   }
 
   const rowCount = lastRow - DATA_START_ROW + 1;
-  const values = sheet.getRange(DATA_START_ROW, 1, rowCount, 17).getValues();
-  const filtered = values.filter((row) => String(row[16] || '').toLowerCase() === user);
+  const values = sheet.getRange(DATA_START_ROW, 1, rowCount, sheet.getLastColumn()).getValues();
+  const filtered = values.filter((row) => getRowUser_(row) === user);
   const recent = filtered
-    .filter((row) => row[0] || row[2] || row[5])
     .slice(-Math.max(1, Math.min(limit || 10, 50)))
     .reverse();
   const lastData = filtered[filtered.length - 1] || [];
@@ -157,13 +156,27 @@ function rowToRecord_(row) {
     cumulativeDividend: Number(row[12]) || 0,
     source: row[13],
     note: row[14],
-    user: row[16]
+    user: getRowUser_(row)
   };
 }
 
 function normalizeUser_(value) {
   const user = String(value || 'folk').trim().toLowerCase();
   return USERS.indexOf(user) >= 0 ? user : 'folk';
+}
+
+function getRowUser_(row) {
+  const directUser = String(row[16] || '').trim().toLowerCase();
+  if (USERS.indexOf(directUser) >= 0) {
+    return directUser;
+  }
+
+  try {
+    const payload = JSON.parse(String(row[15] || '{}'));
+    return normalizeUser_(payload.user);
+  } catch (error) {
+    return 'folk';
+  }
 }
 
 function toIso_(value) {
