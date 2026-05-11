@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard การลงทุนหุ้น</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Investment Dashboard</p>
+          <h1>ภาพรวมการลงทุน</h1>
+        </div>
+        <nav class="page-nav" aria-label="เมนูหลัก">
+          <a href="index.html">บันทึก</a>
+          <a class="active" href="dashboard.html">Dashboard</a>
+        </nav>
+      </section>
+
+      <section class="dashboard standalone-dashboard">
+        <div class="dashboard-heading">
+          <div>
+            <p class="eyebrow">Portfolio Summary</p>
+            <h2>สรุปพอร์ต</h2>
+          </div>
+          <button id="refreshButton" class="secondary-button" type="button">รีเฟรช</button>
+        </div>
+
+        <div class="dashboard-cards">
+          <div>
+            <span>เงินลงทุนสะสม</span>
+            <strong id="totalInvestment">-</strong>
+          </div>
+          <div>
+            <span>หุ้นสะสม</span>
+            <strong id="totalShares">-</strong>
+          </div>
+          <div>
+            <span>ปันผลคาดหวัง/ปี</span>
+            <strong id="totalDividend">-</strong>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-title">
+            <h3>10 รายการล่าสุด</h3>
+            <span id="dashboardStatus">กำลังโหลดข้อมูล...</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>วันที่ซื้อ</th>
+                  <th>หุ้น</th>
+                  <th>ราคาที่ซื้อ</th>
+                  <th>เงินลงทุน</th>
+                  <th>จำนวนหุ้น</th>
+                  <th>ปันผลคาด/ปี</th>
+                </tr>
+              </thead>
+              <tbody id="recentRows">
+                <tr>
+                  <td colspan="6">ยังไม่มีข้อมูล</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="dashboard.js"></script>
+  </body>
+</html>

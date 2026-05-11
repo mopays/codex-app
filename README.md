@@ -58,6 +58,21 @@ PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE
 
 with your Web App URL.
 
+After every Apps Script change, redeploy a new version:
+
+1. `Deploy > Manage deployments`
+2. Edit the current Web App deployment
+3. Select `New version`
+4. Click `Deploy`
+
+The dashboard uses:
+
+```text
+GET /exec?action=list&limit=10&callback=...
+```
+
+to read the latest 10 rows from `investment_data`.
+
 ## Free Public Hosting
 
 Recommended: Cloudflare Pages
