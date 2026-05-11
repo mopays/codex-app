@@ -9,7 +9,7 @@ function doGet(e) {
   const params = (e && e.parameter) || {};
 
   if (params.action === 'list') {
-    return jsonOrJsonpResponse_(buildListResponse_(sheet, Number(params.limit || 10), normalizeUser_(params.user)), params.callback);
+    return jsonOrJsonpResponse_(buildListResponse_(sheet, Number(params.limit || 10)), params.callback);
   }
 
   return jsonOrJsonpResponse_({
@@ -100,7 +100,7 @@ function getPreviousTotals_(sheet, user) {
   };
 }
 
-function buildListResponse_(sheet, limit, user) {
+function buildListResponse_(sheet, limit) {
   if (!sheet) {
     return { ok: false, error: 'missing_data_sheet', rows: [], totals: {} };
   }
@@ -109,7 +109,6 @@ function buildListResponse_(sheet, limit, user) {
   if (lastRow < DATA_START_ROW) {
     return {
       ok: true,
-      user,
       rows: [],
       totals: {
         cumulativeInvestment: 0,
@@ -121,20 +120,18 @@ function buildListResponse_(sheet, limit, user) {
 
   const rowCount = lastRow - DATA_START_ROW + 1;
   const values = sheet.getRange(DATA_START_ROW, 1, rowCount, sheet.getLastColumn()).getValues();
-  const filtered = values.filter((row) => getRowUser_(row) === user);
-  const recent = filtered
+  const recent = values
+    .filter((row) => row[0] || row[15])
     .slice(-Math.max(1, Math.min(limit || 10, 50)))
     .reverse();
-  const lastData = filtered[filtered.length - 1] || [];
 
   return {
     ok: true,
-    user,
     rows: recent.map(rowToRecord_),
     totals: {
-      cumulativeInvestment: Number(lastData[10]) || 0,
-      cumulativeShares: Number(lastData[11]) || 0,
-      cumulativeDividend: Number(lastData[12]) || 0
+      cumulativeInvestment: 0,
+      cumulativeShares: 0,
+      cumulativeDividend: 0
     }
   };
 }

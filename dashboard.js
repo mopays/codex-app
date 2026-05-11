@@ -63,7 +63,7 @@ function loadDashboard() {
   const script = document.createElement("script");
   const url = new URL(APPS_SCRIPT_URL);
   url.searchParams.set("action", "list");
-  url.searchParams.set("limit", "10");
+  url.searchParams.set("limit", "50");
   url.searchParams.set("user", userFilter.value);
   url.searchParams.set("callback", callbackName);
 
@@ -93,9 +93,9 @@ function renderDashboard(data) {
 
   const totals = data.totals || {};
   const selectedUser = userFilter.value;
-  const rows = (data.rows || []).filter((row) => {
-    return getRowUser(row) === selectedUser;
-  });
+  const rows = (data.rows || [])
+    .filter((row) => getRowUser(row) === selectedUser)
+    .slice(0, 10);
 
   const visibleTotals = rows.reduce((sum, row) => ({
     investment: sum.investment + (Number(row.amount) || 0),
