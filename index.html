@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>บันทึกการลงทุนหุ้น</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Investment Logger</p>
+          <h1>บันทึกการลงทุนหุ้น</h1>
+        </div>
+        <div class="tax-pill">ภาษีปันผลเริ่มต้น 10%</div>
+      </section>
+
+      <section class="panel">
+        <form id="investmentForm" class="entry-form">
+          <label>
+            <span>วันที่ซื้อ</span>
+            <input id="tradeDate" name="tradeDate" type="date" required>
+          </label>
+
+          <label>
+            <span>หุ้น</span>
+            <input id="ticker" name="ticker" type="text" placeholder="TISCO" required>
+          </label>
+
+          <label>
+            <span>ราคาซื้อ/หุ้น</span>
+            <input id="price" name="price" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="112.50" required>
+          </label>
+
+          <label>
+            <span>เงินลงทุน</span>
+            <input id="amount" name="amount" type="number" inputmode="decimal" min="1" step="0.01" placeholder="1000" required>
+          </label>
+
+          <label>
+            <span>ปันผล/หุ้น/ปี</span>
+            <input id="dividendPerShare" name="dividendPerShare" type="number" inputmode="decimal" min="0" step="0.01" placeholder="7.75" required>
+          </label>
+
+          <label>
+            <span>ภาษีปันผล</span>
+            <input id="dividendTax" name="dividendTax" type="number" inputmode="decimal" min="0" max="100" step="0.01" value="10">
+          </label>
+
+          <button id="submitButton" type="submit">Submit</button>
+        </form>
+      </section>
+
+      <section class="summary-grid" aria-live="polite">
+        <div>
+          <span>จำนวนหุ้นที่จะได้</span>
+          <strong id="previewShares">-</strong>
+        </div>
+        <div>
+          <span>ปันผลคาด/ปี หลังภาษี</span>
+          <strong id="previewDividend">-</strong>
+        </div>
+        <div>
+          <span>ราคาที่ใช้</span>
+          <strong id="previewPrice">-</strong>
+        </div>
+      </section>
+
+      <p id="statusMessage" class="status">ตั้งค่า Apps Script URL ในไฟล์ script.js ก่อนใช้งานจริง</p>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
