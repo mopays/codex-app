@@ -156,6 +156,7 @@ function rowToRecord_(row) {
     cumulativeDividend: Number(row[12]) || 0,
     source: row[13],
     note: row[14],
+    rawPayload: row[15],
     user: getRowUser_(row)
   };
 }

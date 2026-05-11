@@ -41,6 +41,18 @@ function isWebAppUrl() {
   return APPS_SCRIPT_URL.includes("script.google.com/macros/s/") && APPS_SCRIPT_URL.endsWith("/exec");
 }
 
+function getRowUser(row) {
+  const directUser = String(row.user || "").trim().toLowerCase();
+  if (directUser) return directUser;
+
+  try {
+    const payload = JSON.parse(row.rawPayload || row.raw_payload || "{}");
+    return String(payload.user || "").trim().toLowerCase();
+  } catch (error) {
+    return "";
+  }
+}
+
 function loadDashboard() {
   if (!isWebAppUrl()) {
     dashboardStatus.textContent = "ยังไม่ได้ตั้งค่า Apps Script Web App URL";
@@ -82,13 +94,18 @@ function renderDashboard(data) {
   const totals = data.totals || {};
   const selectedUser = userFilter.value;
   const rows = (data.rows || []).filter((row) => {
-    const rowUser = String(row.user || "").toLowerCase();
-    return !rowUser || rowUser === selectedUser;
+    return getRowUser(row) === selectedUser;
   });
 
-  dashboard.investment.textContent = money(totals.cumulativeInvestment);
-  dashboard.shares.textContent = number(totals.cumulativeShares);
-  dashboard.dividend.textContent = money(totals.cumulativeDividend);
+  const visibleTotals = rows.reduce((sum, row) => ({
+    investment: sum.investment + (Number(row.amount) || 0),
+    shares: sum.shares + (Number(row.shares) || 0),
+    dividend: sum.dividend + (Number(row.expectedDividend) || 0),
+  }), { investment: 0, shares: 0, dividend: 0 });
+
+  dashboard.investment.textContent = money(rows.length ? visibleTotals.investment : 0);
+  dashboard.shares.textContent = number(rows.length ? visibleTotals.shares : 0);
+  dashboard.dividend.textContent = money(rows.length ? visibleTotals.dividend : 0);
 
   if (!rows.length) {
     recentRows.innerHTML = `<tr><td colspan="6">ยังไม่มีข้อมูล</td></tr>`;
