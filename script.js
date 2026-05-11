@@ -83,6 +83,7 @@ form.addEventListener("submit", async (event) => {
   setStatus("กำลังบันทึก...");
 
   const payload = new FormData(form);
+  payload.set("user", fields.user.value);
   payload.set("dividendTax", String(Number(fields.dividendTax.value || 10) / 100));
 
   try {

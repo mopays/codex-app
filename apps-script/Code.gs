@@ -51,7 +51,7 @@ function doPost(e) {
   const id = Utilities.getUuid();
 
   const writeRow = Math.max(sheet.getLastRow() + 1, DATA_START_ROW);
-  sheet.getRange(writeRow, 1, 1, 17).setValues([[
+  sheet.getRange(writeRow, 1, 1, 16).setValues([[
     id,
     createdAt,
     tradeDate,
@@ -67,9 +67,9 @@ function doPost(e) {
     cumulativeDividend,
     'web',
     '',
-    JSON.stringify(params),
-    user
+    JSON.stringify(params)
   ]]);
+  sheet.getRange(writeRow, 17).setValue(user);
 
   return jsonResponse_({
     ok: true,
