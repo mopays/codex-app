@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4QFdQbozS11Mau8-1mEZ5J6vlL2_RzL1w2loX-wVB/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziC0ZKb6oOWXKBC2rI7v-jtViDX6UkWO2xaL_G_Pw77W6KC5DKPV-lgLUycdHOEVwDkA/exec";
 
 const form = document.querySelector("#investmentForm");
 const submitButton = document.querySelector("#submitButton");
