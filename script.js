@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+const APPS_SCRIPT_URL = "https://script.google.com/u/0/home/projects/1QPL_7Pwxv_waKNgHGCFeK36kRE_A93YD5tD0hLU2c925__qVpQAodkrv/edit";
 
 const form = document.querySelector("#investmentForm");
 const submitButton = document.querySelector("#submitButton");
