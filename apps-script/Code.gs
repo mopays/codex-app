@@ -1,7 +1,7 @@
 const SPREADSHEET_ID = '1WmLVcOH3nPOfgXbLFrLBvKDtntjRtPW54ArdZm3kgDg';
 const DATA_SHEET_NAME = 'investment_data';
-const HEADER_ROW = 1;
 const DATA_START_ROW = 2;
+const USERS = ['folk', 'jane'];
 
 function doGet(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -9,7 +9,7 @@ function doGet(e) {
   const params = (e && e.parameter) || {};
 
   if (params.action === 'list') {
-    return jsonOrJsonpResponse_(buildListResponse_(sheet, Number(params.limit || 10)), params.callback);
+    return jsonOrJsonpResponse_(buildListResponse_(sheet, Number(params.limit || 10), normalizeUser_(params.user)), params.callback);
   }
 
   return jsonOrJsonpResponse_({
@@ -25,6 +25,7 @@ function doPost(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(DATA_SHEET_NAME);
 
+  const user = normalizeUser_(params.user);
   const tradeDate = params.tradeDate ? new Date(params.tradeDate) : null;
   const ticker = String(params.ticker || '').trim().toUpperCase();
   const price = Number(params.price);
@@ -36,11 +37,11 @@ function doPost(e) {
     return jsonResponse_({ ok: false, error: 'missing_data_sheet' });
   }
 
-  if (!tradeDate || !ticker || !price || !amount || !dividendPerShare) {
+  if (!user || !tradeDate || !ticker || !price || !amount || !dividendPerShare) {
     return jsonResponse_({ ok: false, error: 'missing_required_fields' });
   }
 
-  const previous = getPreviousTotals_(sheet);
+  const previous = getPreviousTotals_(sheet, user);
   const shares = amount / price;
   const expectedDividend = shares * dividendPerShare * (1 - dividendTax);
   const cumulativeInvestment = previous.investment + amount;
@@ -50,7 +51,7 @@ function doPost(e) {
   const id = Utilities.getUuid();
 
   const writeRow = Math.max(sheet.getLastRow() + 1, DATA_START_ROW);
-  sheet.getRange(writeRow, 1, 1, 16).setValues([[
+  sheet.getRange(writeRow, 1, 1, 17).setValues([[
     id,
     createdAt,
     tradeDate,
@@ -66,13 +67,15 @@ function doPost(e) {
     cumulativeDividend,
     'web',
     '',
-    JSON.stringify(params)
+    JSON.stringify(params),
+    user
   ]]);
 
   return jsonResponse_({
     ok: true,
     row: writeRow,
     id,
+    user,
     shares,
     expectedDividend,
     cumulativeInvestment,
@@ -81,20 +84,23 @@ function doPost(e) {
   });
 }
 
-function getPreviousTotals_(sheet) {
+function getPreviousTotals_(sheet, user) {
   const lastRow = sheet.getLastRow();
   if (lastRow < DATA_START_ROW) {
     return { investment: 0, shares: 0 };
   }
 
-  const lastData = sheet.getRange(lastRow, 1, 1, 16).getValues()[0];
+  const values = sheet.getRange(DATA_START_ROW, 1, lastRow - DATA_START_ROW + 1, 17).getValues();
+  const matching = values.filter((row) => String(row[16] || '').toLowerCase() === user);
+  const lastData = matching[matching.length - 1] || [];
+
   return {
     investment: Number(lastData[10]) || 0,
     shares: Number(lastData[11]) || 0
   };
 }
 
-function buildListResponse_(sheet, limit) {
+function buildListResponse_(sheet, limit, user) {
   if (!sheet) {
     return { ok: false, error: 'missing_data_sheet', rows: [], totals: {} };
   }
@@ -103,6 +109,7 @@ function buildListResponse_(sheet, limit) {
   if (lastRow < DATA_START_ROW) {
     return {
       ok: true,
+      user,
       rows: [],
       totals: {
         cumulativeInvestment: 0,
@@ -113,15 +120,17 @@ function buildListResponse_(sheet, limit) {
   }
 
   const rowCount = lastRow - DATA_START_ROW + 1;
-  const values = sheet.getRange(DATA_START_ROW, 1, rowCount, 16).getValues();
-  const recent = values
+  const values = sheet.getRange(DATA_START_ROW, 1, rowCount, 17).getValues();
+  const filtered = values.filter((row) => String(row[16] || '').toLowerCase() === user);
+  const recent = filtered
     .filter((row) => row[0] || row[2] || row[5])
     .slice(-Math.max(1, Math.min(limit || 10, 50)))
     .reverse();
-  const lastData = values[values.length - 1] || [];
+  const lastData = filtered[filtered.length - 1] || [];
 
   return {
     ok: true,
+    user,
     rows: recent.map(rowToRecord_),
     totals: {
       cumulativeInvestment: Number(lastData[10]) || 0,
@@ -147,8 +156,14 @@ function rowToRecord_(row) {
     cumulativeShares: Number(row[11]) || 0,
     cumulativeDividend: Number(row[12]) || 0,
     source: row[13],
-    note: row[14]
+    note: row[14],
+    user: row[16]
   };
+}
+
+function normalizeUser_(value) {
+  const user = String(value || 'folk').trim().toLowerCase();
+  return USERS.indexOf(user) >= 0 ? user : 'folk';
 }
 
 function toIso_(value) {

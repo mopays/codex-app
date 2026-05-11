@@ -5,6 +5,7 @@ const submitButton = document.querySelector("#submitButton");
 const statusMessage = document.querySelector("#statusMessage");
 
 const fields = {
+  user: document.querySelector("#user"),
   tradeDate: document.querySelector("#tradeDate"),
   ticker: document.querySelector("#ticker"),
   price: document.querySelector("#price"),
@@ -34,17 +35,6 @@ function number(value, digits = 4) {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
   }).format(Number(value) || 0);
-}
-
-function formatDate(value) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("th-TH", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  }).format(date);
 }
 
 function updatePreview() {
@@ -104,6 +94,7 @@ form.addEventListener("submit", async (event) => {
 
     setStatus("ส่งข้อมูลแล้ว เปิดหน้า Dashboard เพื่อตรวจรายการล่าสุด", "success");
     form.reset();
+    fields.user.value = "folk";
     fields.tradeDate.valueAsDate = new Date();
     fields.dividendTax.value = "10";
     updatePreview();

@@ -1,6 +1,7 @@
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw3ARhcx99nURf1Hg0szf-yrQ842d3nh7gBK-uxc0VTQzw6oln1JjzyENB8CoAT7e11yw/exec";
 
 const refreshButton = document.querySelector("#refreshButton");
+const userFilter = document.querySelector("#userFilter");
 const dashboardStatus = document.querySelector("#dashboardStatus");
 const recentRows = document.querySelector("#recentRows");
 
@@ -51,6 +52,7 @@ function loadDashboard() {
   const url = new URL(APPS_SCRIPT_URL);
   url.searchParams.set("action", "list");
   url.searchParams.set("limit", "10");
+  url.searchParams.set("user", userFilter.value);
   url.searchParams.set("callback", callbackName);
 
   dashboardStatus.textContent = "กำลังโหลดข้อมูล...";
@@ -86,7 +88,7 @@ function renderDashboard(data) {
 
   if (!rows.length) {
     recentRows.innerHTML = `<tr><td colspan="6">ยังไม่มีข้อมูล</td></tr>`;
-    dashboardStatus.textContent = "ยังไม่มีรายการบันทึก";
+    dashboardStatus.textContent = `ยังไม่มีรายการของ ${userFilter.value}`;
     return;
   }
 
@@ -101,8 +103,9 @@ function renderDashboard(data) {
     </tr>
   `).join("");
 
-  dashboardStatus.textContent = `แสดง ${rows.length} รายการล่าสุด`;
+  dashboardStatus.textContent = `แสดง ${rows.length} รายการล่าสุดของ ${userFilter.value}`;
 }
 
+userFilter.addEventListener("change", loadDashboard);
 refreshButton.addEventListener("click", loadDashboard);
 loadDashboard();
