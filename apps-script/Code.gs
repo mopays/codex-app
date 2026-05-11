@@ -3,8 +3,20 @@ const DATA_SHEET_NAME = 'investment_data';
 const HEADER_ROW = 1;
 const DATA_START_ROW = 2;
 
+function doGet() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(DATA_SHEET_NAME);
+
+  return jsonResponse_({
+    ok: Boolean(sheet),
+    spreadsheetId: SPREADSHEET_ID,
+    sheetName: DATA_SHEET_NAME,
+    lastRow: sheet ? sheet.getLastRow() : null
+  });
+}
+
 function doPost(e) {
-  const params = e.parameter || {};
+  const params = (e && e.parameter) || {};
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(DATA_SHEET_NAME);
 
