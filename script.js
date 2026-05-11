@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = "https://script.google.com/u/0/home/projects/1QPL_7Pwxv_waKNgHGCFeK36kRE_A93YD5tD0hLU2c925__qVpQAodkrv/edit";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4QFdQbozS11Mau8-1mEZ5J6vlL2_RzL1w2loX-wVB/exec";
 
 const form = document.querySelector("#investmentForm");
 const submitButton = document.querySelector("#submitButton");
@@ -69,8 +69,12 @@ Object.values(fields).forEach((field) => {
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  if (APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
-    setStatus("ยังไม่ได้ใส่ Apps Script Web App URL ใน script.js", "error");
+  const isAppsScriptWebAppUrl =
+    APPS_SCRIPT_URL.includes("script.google.com/macros/s/") &&
+    APPS_SCRIPT_URL.endsWith("/exec");
+
+  if (APPS_SCRIPT_URL.includes("PASTE_YOUR") || !isAppsScriptWebAppUrl) {
+    setStatus("Apps Script URL ต้องเป็น Web App URL ที่ลงท้าย /exec ไม่ใช่หน้าแก้ไขสคริปต์", "error");
     return;
   }
 
