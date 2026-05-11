@@ -65,6 +65,7 @@ function loadDashboard() {
   url.searchParams.set("action", "list");
   url.searchParams.set("limit", "50");
   url.searchParams.set("user", userFilter.value);
+  url.searchParams.set("t", Date.now().toString());
   url.searchParams.set("callback", callbackName);
 
   dashboardStatus.textContent = "กำลังโหลดข้อมูล...";
